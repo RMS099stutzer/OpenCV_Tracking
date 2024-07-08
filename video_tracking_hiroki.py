@@ -16,14 +16,14 @@ def contours(img):
     y = np.mean(contours[0].T[1, 0])                                  # 輪郭のy方向平均値を算出
     return x, y
 
-movie = cv2.VideoCapture('video_r.mp4')                                 # 動画ファイルの読み込み
+movie = cv2.VideoCapture('video_1.mp4')                                 # 動画ファイルの読み込み
 
 # 動画ファイル保存用の設定
 fps = int(movie.get(cv2.CAP_PROP_FPS))                                # 動画のFPSを取得
 w = int(movie.get(cv2.CAP_PROP_FRAME_WIDTH))                          # 動画の横幅を取得
 h = int(movie.get(cv2.CAP_PROP_FRAME_HEIGHT))                         # 動画の縦幅を取得
 fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')                   # 動画保存時のfourcc設定（mp4用）
-video = cv2.VideoWriter('video_out1.mp4', fourcc, fps, (w, h), True)   # 動画の仕様（ファイル名、fourcc, FPS, サイズ, カラー）
+video = cv2.VideoWriter('video_out_1.mp4', fourcc, fps, (w, h), True)   # 動画の仕様（ファイル名、fourcc, FPS, サイズ, カラー）
 
 # ファイルからフレームを1枚ずつ取得して動画処理後に保存する
 x_list = []
