@@ -16,7 +16,7 @@ def contours(img):
     y = np.mean(contours[0].T[1, 0])                                  # 輪郭のy方向平均値を算出
     return x, y
 
-movie = cv2.VideoCapture('video.mp4')                                 # 動画ファイルの読み込み
+movie = cv2.VideoCapture('video_r.mp4')                                 # 動画ファイルの読み込み
 
 # 動画ファイル保存用の設定
 fps = int(movie.get(cv2.CAP_PROP_FPS))                                # 動画のFPSを取得
