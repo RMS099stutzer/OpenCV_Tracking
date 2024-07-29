@@ -39,3 +39,12 @@ Traceback (most recent call last):
 ValueError: setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (422,) + inhomogeneous part.
 ```
 
+### 2024/07/29
+
+- 2台のカメラそれぞれで座標を取得できた
+
+**次やること**
+
+- カメラのキャリブレーションをやろう
+- xy，yz座標を配列に格納しよう
+- pc→pcの通信どうするか決めよう
