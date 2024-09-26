@@ -2,28 +2,22 @@ import cv2
 import numpy as np
 from collections import deque
 
-# 3次元座標を計算する関数
-def calculate_3d_coordinates(x1, y1, x2, f, B):
-    Z = (f * B) / (x1 - x2)
-    X = (x1 * Z) / f
-    Y = (y1 * Z) / f
-    return X, Y, Z
-
+# 輪郭を検出する関数
 def contours(img):
-    img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    ret, img_binary = cv2.threshold(img_gray, 128, 255, cv2.THRESH_BINARY)
-    contours, hierarchy = cv2.findContours(img_binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # グレースケール化
+    ret, img_binary = cv2.threshold(img_gray, 128, 255, cv2.THRESH_BINARY)  # 二値化
+    contours, _ = cv2.findContours(img_binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)  # 輪郭検出
     if len(contours) == 0:
-        return None, None
-    largest_contour = max(contours, key=cv2.contourArea)
+        return None, None  # 輪郭が見つからない場合
+    largest_contour = max(contours, key=cv2.contourArea)  # 最大の輪郭を選択
     M = cv2.moments(largest_contour)
     if M["m00"] == 0:
-        return None, None
-    x = int(M["m10"] / M["m00"])
-    y = int(M["m01"] / M["m00"])
+        return None, None  # 面積がゼロの場合
+    x = int(M["m10"] / M["m00"])  # 重心のx座標
+    y = int(M["m01"] / M["m00"])  # 重心のy座標
     return x, y
 
-# カメラのデバイスID
+# カメラのデバイスIDを指定
 cam1 = cv2.VideoCapture(0)
 cam2 = cv2.VideoCapture(1)
 
@@ -31,50 +25,25 @@ if not cam1.isOpened() or not cam2.isOpened():
     print("カメラの接続に失敗しました")
     exit()
 
-# 白色の閾値設定（HSV色空間、色、彩度、明るさ）
+# 白色の閾値設定（HSV色空間）
 lower = np.array([0, 0, 200])
 upper = np.array([180, 20, 255])
 
-# 軌跡を保存するためのデック（最大長さ500）
+# 軌跡を保存するためのデック
 trajectory1 = deque(maxlen=500)
 trajectory2 = deque(maxlen=500)
 
-# カメラのパラメータ（焦点距離とカメラ間距離は調整が必要）
-f = 800  # 焦点距離（仮定）
-B = 10.0  # カメラ間の距離（cm単位）
-
-# ユーザーが選択した原点
-origin_selected = False
-origin_x1, origin_y1 = None, None
-origin_x2, origin_y2 = None, None
+# 原点を設定
+origin_set = False
+origin = (0, 0, 0)
 
 while True:
-    # 各カメラからフレームを取得
     ret1, frame1 = cam1.read()
     ret2, frame2 = cam2.read()
 
     if not ret1 or not ret2:
         print("フレームの取得に失敗しました")
         break
-
-    # 最初にユーザーに原点となる対象物を両カメラで選択させる
-    if not origin_selected:
-        cv2.putText(frame1, "Select origin (Camera 1) and press ENTER", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
-        cv2.putText(frame2, "Select origin (Camera 2) and press ENTER", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
-        
-        # カメラ1で原点を選択
-        origin_rect1 = cv2.selectROI("Select Origin (Camera 1)", frame1, fromCenter=False, showCrosshair=True)
-        origin_x1, origin_y1 = int(origin_rect1[0] + origin_rect1[2] / 2), int(origin_rect1[1] + origin_rect1[3] / 2)
-        
-        # カメラ2で原点を選択
-        origin_rect2 = cv2.selectROI("Select Origin (Camera 2)", frame2, fromCenter=False, showCrosshair=True)
-        origin_x2, origin_y2 = int(origin_rect2[0] + origin_rect2[2] / 2), int(origin_rect2[1] + origin_rect2[3] / 2)
-        
-        origin_selected = True
-        cv2.destroyWindow("Select Origin (Camera 1)")
-        cv2.destroyWindow("Select Origin (Camera 2)")
-        print(f"Origin selected at x1={origin_x1}, y1={origin_y1} (Camera 1)")
-        print(f"Origin selected at x2={origin_x2}, y2={origin_y2} (Camera 2)")
 
     # フレームをHSV色空間に変換
     hsv1 = cv2.cvtColor(frame1, cv2.COLOR_BGR2HSV)
@@ -92,22 +61,21 @@ while True:
     x1, y1 = contours(filtered1)
     x2, y2 = contours(filtered2)
 
-    if x1 is not None and y1 is not None and x2 is not None:
-        # 両カメラで選択した原点を基準に3次元座標を計算
-        X, Y, Z = calculate_3d_coordinates(x1 - origin_x1, y1 - origin_y1, x2 - origin_x2, f, B)
-        print(f"3D Position relative to origin - X: {X:.2f}, Y: {Y:.2f}, Z: {Z:.2f}")
-
-        # カメラ1に検出結果を描画
+    if x1 is not None and y1 is not None:
         trajectory1.append((x1, y1))
-        frame1 = cv2.circle(frame1, (x1, y1), 10, (0, 0, 255), 2)
-        # 原点を描画
-        frame1 = cv2.circle(frame1, (origin_x1, origin_y1), 10, (255, 0, 0), 2)  # 青で原点表示
+        frame1 = cv2.circle(frame1, (x1, y1), 10, (0, 0, 255), 2)  # 検出した位置にサークル描画
+        if not origin_set:
+            # 最初のトラッキング位置を原点に設定
+            origin = (x1, y1, 0)
+            origin_set = True
+        else:
+            # 3D座標を計算
+            z = 0  # z軸の位置を適切に設定する必要があります
+            print(f"3D座標: x={x1 - origin[0]}, y={y1 - origin[1]}, z={z}")
 
-        # カメラ2に検出結果を描画
+    if x2 is not None and y2 is not None:
         trajectory2.append((x2, y2))
-        frame2 = cv2.circle(frame2, (x2, y2), 10, (0, 0, 255), 2)
-        # 原点を描画
-        frame2 = cv2.circle(frame2, (origin_x2, origin_y2), 10, (255, 0, 0), 2)  # 青で原点表示
+        frame2 = cv2.circle(frame2, (x2, y2), 10, (0, 0, 255), 2)  # 検出した位置にサークル描画
 
     # 軌跡を描画
     for i in range(1, len(trajectory1)):
