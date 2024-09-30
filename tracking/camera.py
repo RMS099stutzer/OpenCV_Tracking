@@ -14,19 +14,32 @@ def find_available_cameras():
                 print(f"Camera index {i} is available")
                 available_cameras_index.append(i)
         except:
-            # print(f"Camera index {i} is not available")
+            # Camera not available
             pass
     
     return available_cameras_index
 
 def open_cameras(index):
-    caps = []
+    cameras = []
     for i in index:
         cap = cv2.VideoCapture(i)
-        caps.append(cap)
+        cameras.append(cap)
     
-    return caps
+    return cameras
 
-def release_cameras(caps):
-    for cap in caps:
+def release_cameras(cameras):
+    for cap in cameras:
         cap.release()
+
+def retrieve_frames(cameras):
+    frames = []
+    for camera in cameras:
+        couldRead, frame = camera.read()
+        
+        if couldRead:
+            frames.append(frame)
+        else:
+            frames.append(None)
+            print("[ERROR] Could not read frame from camera")
+    
+    return frames
