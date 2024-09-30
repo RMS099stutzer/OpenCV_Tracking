@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 class ColorROI:
-    def __init__(self, window_name, roi_size=(100, 100)):
+    def __init__(self, window_name, roi_size=(200, 200)):
         self.window_name = window_name
         self.roi_size = roi_size
 
@@ -17,39 +17,50 @@ class ColorROI:
         # ROIを抽出
         roi = frame[start_point[1]:end_point[1], start_point[0]:end_point[0]]
 
-        # ROIの平均的なBGR色を計算
-        avg_color = cv2.mean(roi)[:3]  # 最後の値はAlpha値なので省略
+        # ROIのBGRからLABへ変換
+        lab_roi = cv2.cvtColor(roi, cv2.COLOR_BGR2LAB)
 
-        return start_point, end_point, avg_color
+        # 各チャンネルごとの最小値と最大値を取得
+        l_min, a_min, b_min = np.min(lab_roi, axis=(0, 1))
+        l_max, a_max, b_max = np.max(lab_roi, axis=(0, 1))
+
+        # 最小値と最大値を返す
+        return start_point, end_point, (l_min, a_min, b_min), (l_max, a_max, b_max)
 
     def draw_roi(self, frame, start_point, end_point):
         # フレーム上に矩形を描画（青色）
         cv2.rectangle(frame, start_point, end_point, (255, 0, 0), 2)
 
 def main():
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(1)
 
     if not cap.isOpened():
         print("カメラを開くことができません")
         return
 
     roi_selector = ColorROI('Frame')
-    hsv_color = []
+
     while True:
         ret, frame = cap.read()
         if not ret:
             print("フレームを取得できません")
             break
 
-        # ROIの色と座標を取得
-        start_point, end_point, avg_color = roi_selector.get_roi_color(frame)
-        hsv_color = cv2.cvtColor(np.uint8([[avg_color]]), cv2.COLOR_BGR2HSV)[0][0]
+        # ROIの色範囲と座標を取得
+        start_point, end_point, min_lab, max_lab = roi_selector.get_roi_color(frame)
 
         # ROI領域を描画
         roi_selector.draw_roi(frame, start_point, end_point)
 
-        # 平均色を表示
-        print(f"ROI内の平均BGR色: {avg_color}")
+        # 余裕を持たせる
+        min_lab = tuple(np.maximum(np.array(min_lab) - 30, 0))
+        max_lab = tuple(np.minimum(np.array(max_lab) + 30, 255))
+
+        # LAB範囲を指定フォーマットで表示
+        # print(f"TRACKING_THRESHOLDS = {{")
+        print(f"    'lower': np.array([{int(min_lab[0])}, {int(min_lab[1])}, {int(min_lab[2])}]),")
+        print(f"    'upper': np.array([{int(max_lab[0])}, {int(max_lab[1])}, {int(max_lab[2])}]),")
+        # print(f"}}")
 
         # フレームを表示
         cv2.imshow('Frame', frame)
@@ -57,15 +68,6 @@ def main():
         key = cv2.waitKey(1) & 0xFF
         if key == ord('q'):
             break
-        
-    hsv_lower = hsv_color - 20
-    hsv_upper = hsv_color + 20
-
-    #     "lower": np.array([0, 0, 200]),
-    #"upper": np.array([180, 20, 255]),
-
-    print(f"    lower: np.array({hsv_lower}),")
-    print(f"    upper: np.array({hsv_upper}),")
 
     cap.release()
     cv2.destroyAllWindows()
