@@ -2,7 +2,7 @@
 import socket
 
 # サーバーのIPアドレスとポート番号を設定
-SERVER_HOST = '192.168.1.2'  # サーバーPCのIPアドレスに置き換える
+SERVER_HOST = '169.254.94.217'  # サーバーPCのIPアドレスに置き換える
 SERVER_PORT = 5000           # ポート番号
 
 def send_file(file_path):
