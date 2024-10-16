@@ -24,6 +24,7 @@ from image import draw_circle
 from image import draw_black_rect
 
 from multi_image_to_3d import x_y_to_degree
+from multi_image_to_3d import convert_2d_to_3d
 
 from user_interface import is_key_pressed
 
@@ -65,9 +66,9 @@ def main():
         x_y = retrieve_x_y_from_max_contour(masks)
         deg_x_y = x_y_to_degree(x_y)
 
-        # print("[INFO] 座標", deg_x_y)
-        # print("[INFO] 座標", x_y)
-        print("[INFO] 座標", x_y, "\t角度", deg_x_y)
+        convert_2d_to_3d(deg_x_y[0], deg_x_y[1])
+
+        # print("[INFO] 座標", x_y, "\t角度", deg_x_y)
         imgs_show(draw_circle(frames, x_y))
 
         if is_key_pressed("q"):

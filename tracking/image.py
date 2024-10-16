@@ -36,7 +36,6 @@ def retrieve_x_y_from_max_contour(masks):
 
         if M["m00"] == 0:
             x_y.append((None, None))
-            print("[ERROR] m00 is 0")
             continue
         
         x = int(M["m10"] / M["m00"])  # 輪郭の重心のx座標を算出
