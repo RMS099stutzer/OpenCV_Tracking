@@ -1,5 +1,8 @@
 import numpy as np
 
+from config import CAMERA_NUM
+from config import TRACKING_THRESHOLDS
+
 from camera import find_available_cameras
 from camera import open_cameras
 from camera import release_cameras
@@ -10,20 +13,9 @@ from image import create_mask
 from image import retrieve_x_y_from_max_contour
 from image import draw_circle
 
-from user_interface import is_key_pressed
+from multi_image_to_3d import x_y_to_degree
 
-# CONFIG
-CAMERA_NUM = 2
-TRACKING_THRESHOLDS = [
-    {
-        "lower": np.array([99, 97, 46]),
-        "upper": np.array([215, 167, 115]),
-    },
-    {
-        "lower": np.array([67, 99, 59]),
-        "upper": np.array([155, 163, 125]),
-    },
-]
+from user_interface import is_key_pressed
 
 
 def main():
@@ -40,6 +32,7 @@ def main():
 
     # Tracking
     input("[INFO] Press Enter to start tracking")
+
     print("[INFO] Tracking started")
     print("[INFO] Press 'q' to stop tracking")
 
@@ -53,9 +46,11 @@ def main():
         # Create mask
         masks = create_mask(frames, TRACKING_THRESHOLDS)
         x_y = retrieve_x_y_from_max_contour(masks)
+        deg_x_y = x_y_to_degree(x_y)
 
-        print("[INFO] 座標", x_y)
-
+        # print("[INFO] 座標", deg_x_y)
+        # print("[INFO] 座標", x_y)
+        print("[INFO] 座標", x_y, "\t角度", deg_x_y)
         imgs_show(draw_circle(frames, x_y))
 
         if is_key_pressed("q"):
