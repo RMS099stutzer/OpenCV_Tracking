@@ -1,8 +1,16 @@
+import os
+
+# カメラの設定
+try: 
+    os.environ["OPENCV_VIDEOIO_MSMF_ENABLE_HW_TRANSFORMS"] = "0"
+except:
+    pass
+
 import cv2
 import numpy as np
 
 class ColorROI:
-    def __init__(self, window_name, roi_size=(200, 200)):
+    def __init__(self, window_name, roi_size=(20, 20)):
         self.window_name = window_name
         self.roi_size = roi_size
 
@@ -32,6 +40,7 @@ class ColorROI:
         cv2.rectangle(frame, start_point, end_point, (255, 0, 0), 2)
 
 def main():
+    print("[INFO] START")
     cap = cv2.VideoCapture(1)
 
     if not cap.isOpened():
