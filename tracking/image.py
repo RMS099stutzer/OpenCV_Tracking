@@ -54,3 +54,8 @@ def draw_circle(imgs, x_y):
             pass
 
     return imgs
+
+def draw_black_rect(img, start_point, end_point):
+    cv2.rectangle(img, start_point, end_point, (0, 0, 0), -1)
+
+    return img

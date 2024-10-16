@@ -1,8 +1,9 @@
 import numpy as np
 
+# default
 CAMERA_X_RANGE = 88 
-CAMERA_X_RESOLUTION = 1920
-CAMERA_Y_RESOLUTION = 1080
+CAMERA_X_RESOLUTION = 640
+CAMERA_Y_RESOLUTION = 480
 CAMERA_Y_RANGE = (CAMERA_X_RANGE / CAMERA_X_RESOLUTION) * CAMERA_Y_RESOLUTION
 
 def x_y_to_degree(x_y):
@@ -22,6 +23,6 @@ def x_y_to_degree(x_y):
         deg_x_y.append((x_degree, y_degree))
     
     return deg_x_y
-    
+
 if __name__ == "__main__":
     print(CAMERA_Y_RANGE)

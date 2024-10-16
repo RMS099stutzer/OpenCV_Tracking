@@ -21,6 +21,7 @@ from image import imgs_show
 from image import create_mask
 from image import retrieve_x_y_from_max_contour
 from image import draw_circle
+from image import draw_black_rect
 
 from multi_image_to_3d import x_y_to_degree
 
@@ -59,6 +60,7 @@ def main():
             break
 
         # Create mask
+        frames[1] = draw_black_rect(frames[1], (550, 0), (640, 480))
         masks = create_mask(frames, TRACKING_THRESHOLDS)
         x_y = retrieve_x_y_from_max_contour(masks)
         deg_x_y = x_y_to_degree(x_y)

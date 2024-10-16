@@ -1,14 +1,15 @@
 import numpy as np
 
 # CONFIG
-CAMERA_NUM = 1
+CAMERA_NUM = 2
 TRACKING_THRESHOLDS = [
     {
-        "lower": np.array([65, 153, 127]),
-        "upper": np.array([153, 215, 190]),
+        "lower": np.array([240, 100, 100]),
+        "upper": np.array([255, 160, 160]),
     },
     {
-        "lower": np.array([67, 99, 59]),
-        "upper": np.array([155, 163, 125]),
+        "lower": np.array([240, 100, 100]),
+        "upper": np.array([255, 160, 160]),
     },
 ]
+
