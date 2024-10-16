@@ -1,7 +1,7 @@
 import os
 
 # カメラの設定
-try: 
+try:
     os.environ["OPENCV_VIDEOIO_MSMF_ENABLE_HW_TRANSFORMS"] = "0"
 except:
     pass
@@ -28,6 +28,29 @@ from multi_image_to_3d import convert_2d_to_3d
 
 from user_interface import is_key_pressed
 
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+
+########## ########## ########## ########## ########## ########## 
+# 3Dリアルタイムプロットのセットアップ
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+
+# 軸の範囲を設定
+ax.set_xlim([-70, 70])
+ax.set_ylim([-70, 70])
+ax.set_zlim([-70, 70])
+
+# 軸のラベルを設定
+ax.set_xlabel('X')
+ax.set_ylabel('Y')
+ax.set_zlabel('Z')
+
+# リアルタイムに更新する座標
+tracked_point, = ax.plot([], [], [], 'go', label="Tracked Point")
+
+########## ########## ########## ########## ########## ##########
+
 def main():
     # Setting up cameras
     available_cameras_index = find_available_cameras()
@@ -37,10 +60,10 @@ def main():
         print("[ERROR] Not enough cameras available")
         return
 
-#    cameras = open_cameras(available_cameras_index[:CAMERA_NUM])
+    #    cameras = open_cameras(available_cameras_index[:CAMERA_NUM])
     cameras = open_cameras([1, 2])
     print("[INFO] Cameras opened")
-    
+
     # show the resolution of the camera
     for i, camera in enumerate(cameras):
         width = camera.get(cv2.CAP_PROP_FRAME_WIDTH)
@@ -66,9 +89,18 @@ def main():
         x_y = retrieve_x_y_from_max_contour(masks)
         deg_x_y = x_y_to_degree(x_y)
 
-        convert_2d_to_3d(deg_x_y[0], deg_x_y[1])
+        xyz_coord = convert_2d_to_3d(deg_x_y[0], deg_x_y[1])
 
-        # print("[INFO] 座標", x_y, "\t角度", deg_x_y)
+        ########## ########## ########## ########## ########## ##########
+        # 3D座標が取得できた場合にプロットを更新
+        if None not in xyz_coord:
+            tracked_point.set_data([xyz_coord[0]], [xyz_coord[1]])
+            tracked_point.set_3d_properties([xyz_coord[2]])
+            plt.draw()
+            plt.pause(0.01)  # プロットの更新速度
+        ########## ########## ########## ########## ########## ##########
+
+        # 画像に円を描画して表示
         imgs_show(draw_circle(frames, x_y))
 
         if is_key_pressed("q"):
