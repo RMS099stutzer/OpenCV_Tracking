@@ -1,3 +1,12 @@
+import os
+
+# カメラの設定
+try: 
+    os.environ["OPENCV_VIDEOIO_MSMF_ENABLE_HW_TRANSFORMS"] = "0"
+except:
+    pass
+
+import cv2
 import numpy as np
 
 from config import CAMERA_NUM
@@ -17,7 +26,6 @@ from multi_image_to_3d import x_y_to_degree
 
 from user_interface import is_key_pressed
 
-
 def main():
     # Setting up cameras
     available_cameras_index = find_available_cameras()
@@ -27,8 +35,15 @@ def main():
         print("[ERROR] Not enough cameras available")
         return
 
-    cameras = open_cameras(available_cameras_index[:CAMERA_NUM])
+#    cameras = open_cameras(available_cameras_index[:CAMERA_NUM])
+    cameras = open_cameras([1, 2])
     print("[INFO] Cameras opened")
+    
+    # show the resolution of the camera
+    for i, camera in enumerate(cameras):
+        width = camera.get(cv2.CAP_PROP_FRAME_WIDTH)
+        height = camera.get(cv2.CAP_PROP_FRAME_HEIGHT)
+        print(f"[INFO] Camera {i} resolution: {width}x{height}")
 
     # Tracking
     input("[INFO] Press Enter to start tracking")

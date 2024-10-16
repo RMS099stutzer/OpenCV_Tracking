@@ -10,7 +10,7 @@ import cv2
 import numpy as np
 
 class ColorROI:
-    def __init__(self, window_name, roi_size=(20, 20)):
+    def __init__(self, window_name, roi_size=(10, 10)):
         self.window_name = window_name
         self.roi_size = roi_size
 
