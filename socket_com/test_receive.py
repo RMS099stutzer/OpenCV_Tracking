@@ -25,4 +25,4 @@ def receive_file(save_path):
         print('File received successfully.')
 
 if __name__ == "__main__":
-    receive_file('received.csv')  # 保存するファイルのパスを指定
+    receive_file('received.txt')  # 保存するファイルのパスを指定
