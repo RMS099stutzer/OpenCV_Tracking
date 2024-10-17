@@ -3,7 +3,7 @@ import os
 import time
 
 # サーバーのIPアドレスとポート番号を設定
-SERVER_HOST = '10.101.206.172'  # server側のIPアドレスに置き換える
+SERVER_HOST = '10.101.224.180'  # server側のIPアドレスに置き換える
 SERVER_PORT = 5000              # ポート番号
 
 def send_file(file_path):
@@ -40,4 +40,4 @@ def monitor_folder(folder_path):
             files_set = new_files_set
 
 if __name__ == "__main__":
-    monitor_folder('/path/to/your/folder')  # フォルダのパスを指定
+    monitor_folder('"C:\Users\317ri\Downloads\test_data"')  # フォルダのパスを指定
