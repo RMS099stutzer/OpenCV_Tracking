@@ -58,7 +58,13 @@ def stop_monitoring():
     print("Monitoring stopped.")
 
 if __name__ == "__main__":
-    folder_path = r"C:\Users\317ri\Downloads\test_data"
+    
+    ###################################################################
+    #フォルダのパス変更は
+    #　ここ！！！！！！！！！
+    ###################################################################
+    folder_path = r" " #監視するフォルダのパスを記入
+    
     # 監視を別スレッドで開始
     monitoring_thread = threading.Thread(target=monitor_folder, args=(folder_path,))
     monitoring_thread.start()
