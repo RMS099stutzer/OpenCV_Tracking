@@ -1,5 +1,4 @@
 import socket
-import keyboard
 
 # サーバーのIPアドレスとポート番号を設定
 SERVER_HOST = '169.254.13.242'  # 全てのネットワークインターフェースから接続を受け付ける
@@ -24,19 +23,9 @@ def receive_file(save_path):
             with open(save_path, 'ab') as file:  # 'ab'モードで追記
                 file.write(data)
                 
-            print(f'Received {len(data)} bytes. Press "n" to stop receiving.')
+            print(f'Received {len(data)} bytes.')
 
-        print('File received successfully.')
+        print('File reception completed.')
 
 if __name__ == "__main__":
-    # 受信スレッドを開始するためのラッパー関数
-    def start_receiving():
-        save_path = 'received.txt'
-        while True:
-            receive_file(save_path)
-            if keyboard.is_pressed('n'):  # 'n'キーが押されているか確認
-                print("Stopping data reception.")
-                break
-
-    print("Press 'n' to stop receiving data.")
-    start_receiving()
+    receive_file('received.txt')  # 保存するファイルのパスを指定
