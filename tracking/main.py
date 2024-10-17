@@ -61,7 +61,7 @@ def main():
         return
 
     #    cameras = open_cameras(available_cameras_index[:CAMERA_NUM])
-    cameras = open_cameras([1, 2])
+    cameras = open_cameras([2, 1])
     print("[INFO] Cameras opened")
 
     # show the resolution of the camera

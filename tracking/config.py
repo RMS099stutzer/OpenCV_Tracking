@@ -4,11 +4,11 @@ import numpy as np
 CAMERA_NUM = 2
 TRACKING_THRESHOLDS = [
     {
-        "lower": np.array([240, 100, 100]),
+        "lower": np.array([250, 100, 100]),
         "upper": np.array([255, 160, 160]),
     },
     {
-        "lower": np.array([240, 100, 100]),
+        "lower": np.array([250, 100, 100]),
         "upper": np.array([255, 160, 160]),
     },
 ]
