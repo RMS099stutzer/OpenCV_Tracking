@@ -40,4 +40,4 @@ def monitor_folder(folder_path):
             files_set = new_files_set
 
 if __name__ == "__main__":
-    monitor_folder('"C:\Users\317ri\Downloads\test_data"')  # フォルダのパスを指定
+    monitor_folder(r"C:\Users\317ri\Downloads\test_data")
