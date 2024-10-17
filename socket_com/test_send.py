@@ -1,10 +1,14 @@
 import socket
 import os
 import time
+import threading
+import keyboard
 
 # サーバーのIPアドレスとポート番号を設定
 SERVER_HOST = '169.254.13.242'  # server側のIPアドレスに置き換える
 SERVER_PORT = 5000              # ポート番号
+
+is_monitoring = False  # 監視状態を示すフラグ
 
 def send_file(file_path):
     # ソケットを作成し、TCP接続を設定
@@ -17,27 +21,52 @@ def send_file(file_path):
             for data in iter(lambda: file.read(1024), b''):
                 client_socket.sendall(data)
         
-        print('File sent successfully.')
+        print(f'File {file_path} sent successfully.')
 
 def monitor_folder(folder_path):
+    global is_monitoring
     # 最初に既存のファイルを取得
     files_set = set(os.listdir(folder_path))
     print(f'Monitoring folder: {folder_path}')
 
     while True:
-        time.sleep(5)  # 5秒ごとにフォルダを監視
-        new_files_set = set(os.listdir(folder_path))
-        
-        # 新しいファイルがあればそれを特定
-        new_files = new_files_set - files_set
-        if new_files:
-            for file_name in new_files:
-                file_path = os.path.join(folder_path, file_name)
-                print(f'New file detected: {file_name}')
-                send_file(file_path)  # 新しいファイルを送信
+        if is_monitoring:
+            time.sleep(5)  # 5秒ごとにフォルダを監視
+            new_files_set = set(os.listdir(folder_path))
             
-            # 現在のファイル状態を更新
-            files_set = new_files_set
+            # 新しいファイルがあればそれを特定
+            new_files = new_files_set - files_set
+            if new_files:
+                for file_name in new_files:
+                    file_path = os.path.join(folder_path, file_name)
+                    print(f'New file detected: {file_name}')
+                    send_file(file_path)  # 新しいファイルを送信
+                
+                # 現在のファイル状態を更新
+                files_set = new_files_set
+        else:
+            time.sleep(1)  # 監視が停止しているときは少し待つ
+
+def start_monitoring():
+    global is_monitoring
+    is_monitoring = True
+    print("Monitoring started...")
+
+def stop_monitoring():
+    global is_monitoring
+    is_monitoring = False
+    print("Monitoring stopped.")
 
 if __name__ == "__main__":
-    monitor_folder(r"C:\Users\317ri\Downloads\test_data")
+    folder_path = r"C:\Users\317ri\Downloads\test_data"
+    # 監視を別スレッドで開始
+    monitoring_thread = threading.Thread(target=monitor_folder, args=(folder_path,))
+    monitoring_thread.start()
+
+    # キー入力の監視
+    keyboard.add_hotkey('s', start_monitoring)  # 's'キーで監視開始
+    keyboard.add_hotkey('u', stop_monitoring)   # 'u'キーで監視停止
+
+    # メインスレッドは待機
+    keyboard.wait('esc')  # 'esc'キーでプログラムを終了
+    print("Program terminated.")
