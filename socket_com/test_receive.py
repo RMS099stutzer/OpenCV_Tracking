@@ -1,7 +1,7 @@
 import socket
 
 # サーバーのIPアドレスとポート番号を設定
-SERVER_HOST = '10.101.224.180'  # 全てのネットワークインターフェースから接続を受け付ける
+SERVER_HOST = '169.254.13.242'  # 全てのネットワークインターフェースから接続を受け付ける
 SERVER_PORT = 5000       # クライアント側と同じポート番号
 
 def receive_file(save_path):

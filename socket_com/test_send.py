@@ -3,7 +3,7 @@ import os
 import time
 
 # サーバーのIPアドレスとポート番号を設定
-SERVER_HOST = '10.101.224.180'  # server側のIPアドレスに置き換える
+SERVER_HOST = '169.254.13.242'  # server側のIPアドレスに置き換える
 SERVER_PORT = 5000              # ポート番号
 
 def send_file(file_path):
