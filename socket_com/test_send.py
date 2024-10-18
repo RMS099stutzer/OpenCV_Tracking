@@ -16,6 +16,13 @@ def send_file(file_path):
         client_socket.connect((SERVER_HOST, SERVER_PORT))
         print(f'Connected to server {SERVER_HOST}:{SERVER_PORT}')
         
+        # ファイル名をまず送信
+        file_name = os.path.basename(file_path)
+        client_socket.sendall(file_name.encode('utf-8'))  # ファイル名を送信
+        
+        # サーバーがファイル名を受け取るのを待つ
+        time.sleep(1)  # 短い待機
+
         # ファイルを開いて送信
         with open(file_path, 'rb') as file:
             for data in iter(lambda: file.read(1024), b''):
@@ -61,9 +68,9 @@ if __name__ == "__main__":
     
     ###################################################################
     #フォルダのパス変更は
-    #　ここ！！！！！！！！！
+    #　ここ！！！！！！！！！ 
     ###################################################################
-    folder_path = r" " #監視するフォルダのパスを記入
+    folder_path = r" "  # 監視するフォルダのパスを記入
     
     # 監視を別スレッドで開始
     monitoring_thread = threading.Thread(target=monitor_folder, args=(folder_path,))

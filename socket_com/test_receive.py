@@ -1,8 +1,9 @@
 import socket
+import os
 
 # サーバーのIPアドレスとポート番号を設定
-SERVER_HOST = '169.254.13.242'  # 全てのネットワークインターフェースから接続を受け付ける
-SERVER_PORT = 5000               # クライアント側と同じポート番号
+SERVER_HOST = '0.0.0.0'  # 全てのネットワークインターフェースから接続を受け付ける
+SERVER_PORT = 5000       # クライアント側と同じポート番号
 
 def receive_file():
     # ソケットを作成し、TCP接続を設定
@@ -23,7 +24,7 @@ def receive_file():
                 continue
             
             # 新しいファイルを作成して受信
-            with open(file_name, 'ab') as file:  # 'ab'モードで追記
+            with open(file_name, 'wb') as file:  # 'wb'モードで新規作成
                 while True:
                     data = conn.recv(1024)
                     if not data:
