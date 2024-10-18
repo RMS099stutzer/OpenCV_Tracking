@@ -5,6 +5,9 @@ import os
 SERVER_HOST = '0.0.0.0'  # 全てのネットワークインターフェースから接続を受け付ける
 SERVER_PORT = 5000       # クライアント側と同じポート番号
 
+# 保存先のフォルダパスを指定（適宜変更してください）
+folder_path = r'/path/to/save/folder/'
+
 def receive_file():
     # ソケットを作成し、TCP接続を設定
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
@@ -23,8 +26,11 @@ def receive_file():
                 conn.close()
                 continue
             
+            # ファイルの保存先パスを作成
+            save_path = os.path.join(folder_path, file_name)
+            
             # 新しいファイルを作成して受信
-            with open(file_name, 'wb') as file:  # 'wb'モードで新規作成
+            with open(save_path, 'wb') as file:  # 'wb'モードで新規作成
                 while True:
                     data = conn.recv(1024)
                     if not data:
@@ -32,8 +38,8 @@ def receive_file():
                     file.write(data)
                     print(f'Received {len(data)} bytes for file {file_name}.')
             
-            print(f'File reception completed for {file_name}.')
+            print(f'File reception completed for {file_name}. Saved to: {save_path}')
             conn.close()  # クライアントとの接続を閉じる
 
 if __name__ == "__main__":
-    receive_file()  # ファイルを受信する
+    receive_file()  # ファイルを受信して保存する
