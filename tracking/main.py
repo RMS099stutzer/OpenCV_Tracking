@@ -1,4 +1,7 @@
 import os
+import threading
+import time
+import sys
 
 # カメラの設定
 try:
@@ -31,10 +34,13 @@ from user_interface import is_key_pressed
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
-########## ########## ########## ########## ########## ########## 
+from data_transfer import socket_connect
+from data_transfer import data_transfer_coord
+
+########## ########## ########## ########## ########## ##########
 # 3Dリアルタイムプロットのセットアップ
 fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
+ax = fig.add_subplot(111, projection="3d")
 
 # 軸の範囲を設定
 ax.set_xlim([-70, 70])
@@ -42,16 +48,23 @@ ax.set_ylim([-70, 70])
 ax.set_zlim([-70, 70])
 
 # 軸のラベルを設定
-ax.set_xlabel('X')
-ax.set_ylabel('Y')
-ax.set_zlabel('Z')
+ax.set_xlabel("X")
+ax.set_ylabel("Y")
+ax.set_zlabel("Z")
 
 # リアルタイムに更新する座標
-tracked_point, = ax.plot([], [], [], 'go', label="Tracked Point")
+(tracked_point,) = ax.plot([], [], [], "go", label="Tracked Point")
 
 ########## ########## ########## ########## ########## ##########
 
-def main():
+xyz_coord = [None, None, None]
+xyz_coord_stablized = [None, None, None]
+
+# スレッド終了フラグ
+exit_flag = threading.Event()
+
+def tracking_process():
+    global xyz_coord
     # Setting up cameras
     available_cameras_index = find_available_cameras()
 
@@ -71,12 +84,11 @@ def main():
         print(f"[INFO] Camera {i} resolution: {width}x{height}")
 
     # Tracking
-    input("[INFO] Press Enter to start tracking")
-
+    # input("[INFO] Press Enter to start tracking")
     print("[INFO] Tracking started")
     print("[INFO] Press 'q' to stop tracking")
 
-    while True:
+    while not exit_flag.is_set():
         frames = retrieve_frames(cameras)
 
         if np.any([frame is None for frame in frames]):
@@ -91,19 +103,13 @@ def main():
 
         xyz_coord = convert_2d_to_3d(deg_x_y[0], deg_x_y[1])
 
-        ########## ########## ########## ########## ########## ##########
-        # 3D座標が取得できた場合にプロットを更新
         if None not in xyz_coord:
-            tracked_point.set_data([xyz_coord[0]], [xyz_coord[1]])
-            tracked_point.set_3d_properties([xyz_coord[2]])
-            plt.draw()
-            plt.pause(0.01)  # プロットの更新速度
-        ########## ########## ########## ########## ########## ##########
+            xyz_coord[1] = xyz_coord[1] * (-1.0)
 
-        # 画像に円を描画して表示
         imgs_show(draw_circle(frames, x_y))
 
         if is_key_pressed("q"):
+            exit_flag.set()
             break
 
     # Close cameras
@@ -111,5 +117,48 @@ def main():
     print("[INFO] Cameras released")
 
 
+def data_send_process():
+    global xyz_coord, xyz_coord_stablized
+
+    print("[INFO] Connecting to the server")
+    try:
+        socket_connect()
+        print("[INFO] Connected to the server")
+    except:
+        print("[ERROR] Could not connect to the server")
+
+    while not exit_flag.is_set():
+        if None in xyz_coord_stablized and None not in xyz_coord:
+            xyz_coord_stablized = xyz_coord
+        elif None in xyz_coord:
+            xyz_coord_stablized = [None, None, None]
+        elif None not in xyz_coord_stablized and None not in xyz_coord:
+            xyz_coord_stablized = xyz_coord * 0.1 + xyz_coord_stablized * 0.9
+        
+        print("[INFO] Sending data to the server")
+        try:
+            print(xyz_coord_stablized)
+            data_transfer_coord(xyz_coord)
+            # time.sleep(0.07)
+        except:
+            print("[ERROR] Could not send data to the server")
+            exit_flag.set()
+
+            # try:
+            #     socket_connect()
+            #     print("[INFO] Reconnected to the server")
+            # except:
+            #     print("[ERROR] Could not reconnect to the server")
+
+
 if __name__ == "__main__":
-    main()
+    tracking_thread = threading.Thread(target=tracking_process)
+    data_send_thread = threading.Thread(target=data_send_process)
+
+    tracking_thread.start()
+    data_send_thread.start()
+
+    tracking_thread.join()
+    data_send_thread.join()
+
+    sys.exit()

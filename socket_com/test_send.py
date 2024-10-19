@@ -5,8 +5,8 @@ import threading
 import keyboard
 
 # サーバーのIPアドレスとポート番号を設定
-SERVER_HOST = '169.254.13.242'  # server側のIPアドレスに置き換える
-SERVER_PORT = 5000              # ポート番号
+SERVER_HOST = '169.254.147.62'  # server側のIPアドレスに置き換える
+SERVER_PORT = 6000              # ポート番号
 
 is_monitoring = False  # 監視状態を示すフラグ
 
@@ -38,8 +38,10 @@ def monitor_folder(folder_path):
 
     while True:
         if is_monitoring:
-            time.sleep(5)  # 5秒ごとにフォルダを監視
+            time.sleep(1)  # 5秒ごとにフォルダを監視
             new_files_set = set(os.listdir(folder_path))
+
+            print(f'Files in folder: {new_files_set}')
             
             # 新しいファイルがあればそれを特定
             new_files = new_files_set - files_set
@@ -70,7 +72,7 @@ if __name__ == "__main__":
     #フォルダのパス変更は
     #　ここ！！！！！！！！！ 
     ###################################################################
-    folder_path = r" "  # 監視するフォルダのパスを記入
+    folder_path = r"C:\Users\shirokuma89dev-win10\Documents\GitHub\3D_Visualization\test\csv"  # 監視するフォルダのパスを記入
     
     # 監視を別スレッドで開始
     monitoring_thread = threading.Thread(target=monitor_folder, args=(folder_path,))
