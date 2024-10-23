@@ -1,6 +1,5 @@
 import os
 import threading
-import time
 import sys
 
 # カメラの設定
@@ -30,39 +29,15 @@ from multi_image_to_3d import convert_2d_to_3d
 
 from user_interface import is_key_pressed
 
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-
 from data_transfer import socket_connect
 from data_transfer import data_transfer_coord
-
-########## ########## ########## ########## ########## ##########
-# 3Dリアルタイムプロットのセットアップ
-fig = plt.figure()
-ax = fig.add_subplot(111, projection="3d")
-
-# 軸の範囲を設定
-ax.set_xlim([-70, 70])
-ax.set_ylim([-70, 70])
-ax.set_zlim([-70, 70])
-
-# 軸のラベルを設定
-ax.set_xlabel("X")
-ax.set_ylabel("Y")
-ax.set_zlabel("Z")
-
-# リアルタイムに更新する座標
-(tracked_point,) = ax.plot([], [], [], "go", label="Tracked Point")
-
-########## ########## ########## ########## ########## ##########
 
 xyz_coord = [None, None, None]
 xyz_coord_stablized = [None, None, None]
 
-# スレッド終了フラグ
 exit_flag = threading.Event()
 
-def tracking_process():
+def tracking_process(cameras_index=[2, 1]):
     global xyz_coord
     # Setting up cameras
     available_cameras_index = find_available_cameras()
@@ -72,8 +47,7 @@ def tracking_process():
         print("[ERROR] Not enough cameras available")
         return
 
-    #    cameras = open_cameras(available_cameras_index[:CAMERA_NUM])
-    cameras = open_cameras([2, 1])
+    cameras = open_cameras(cameras_index)
     print("[INFO] Cameras opened")
 
     # show the resolution of the camera
@@ -83,7 +57,6 @@ def tracking_process():
         print(f"[INFO] Camera {i} resolution: {width}x{height}")
 
     # Tracking
-    # input("[INFO] Press Enter to start tracking")
     print("[INFO] Tracking started")
     print("[INFO] Press 'q' to stop tracking")
 
@@ -92,6 +65,7 @@ def tracking_process():
 
         if np.any([frame is None for frame in frames]):
             print("[ERROR] Could not read frame from camera")
+            exit_flag.set()
             break
 
         # Create mask
@@ -114,6 +88,7 @@ def tracking_process():
     # Close cameras
     release_cameras(cameras)
     print("[INFO] Cameras released")
+    exit_flag.set()
 
 
 def data_send_process():
@@ -138,17 +113,9 @@ def data_send_process():
         try:
             print(xyz_coord_stablized)
             data_transfer_coord(xyz_coord)
-            # time.sleep(0.07)
         except:
             print("[ERROR] Could not send data to the server")
             exit_flag.set()
-
-            # try:
-            #     socket_connect()
-            #     print("[INFO] Reconnected to the server")
-            # except:
-            #     print("[ERROR] Could not reconnect to the server")
-
 
 if __name__ == "__main__":
     tracking_thread = threading.Thread(target=tracking_process)
