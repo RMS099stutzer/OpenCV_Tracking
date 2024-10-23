@@ -5,7 +5,7 @@ import threading
 import keyboard
 
 # サーバーのIPアドレスとポート番号を設定
-SERVER_HOST = '169.254.147.62'  # server側のIPアドレスに置き換える
+SERVER_HOST = '169.254.44.200'  # server側のIPアドレスに置き換える
 SERVER_PORT = 6000              # ポート番号
 
 is_monitoring = False  # 監視状態を示すフラグ
@@ -72,7 +72,7 @@ if __name__ == "__main__":
     #フォルダのパス変更は
     #　ここ！！！！！！！！！ 
     ###################################################################
-    folder_path = r"C:\Users\shirokuma89dev-win10\Documents\GitHub\3D_Visualization\test\csv"  # 監視するフォルダのパスを記入
+    folder_path = r"C:\Users\shirokuma89dev-win10\Documents\GitHub\OpenCV_Tracking\visualization\csv"  # 監視するフォルダのパスを記入
     
     # 監視を別スレッドで開始
     monitoring_thread = threading.Thread(target=monitor_folder, args=(folder_path,))
