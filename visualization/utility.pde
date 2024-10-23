@@ -16,27 +16,47 @@ void handleEndScreenState() {
 }
 
 void initializeValues() {
+    resetFlags();
+    resetRotation();
+    resetCamera();
+    resetLoading();
+    resetFinishMessage();
+    strokeWeight(1);
+}
+
+void resetFlags() {
     isFirstReceive = 0;
     lineCount = 0;
     receivedLines = 0;
+}
+
+void resetRotation() {
     prevRotationX = PI / 6;
     prevRotationZ = PI / 6;
     rotationX = PI / 6;
     rotationZ = PI / 6;
+}
+
+void resetCamera() {
     cameraX = 0;
     cameraY = 0;
     scaleFactor = 1.2;
+}
+
+void resetLoading() {
     loadingInterval = 50;
     loadingStatus = 0;
     loadingIncrement = 4;
     loadingProgress = 0;
+}
+
+void resetFinishMessage() {
     isFinishMessage = 0;
     remainingSeconds = 5;
     loadingDot0 = 0;
     loadingDot1 = 0;
     loadingDot2 = 0;
     loadingDotState = 0;
-    strokeWeight(1);
 }
 
 PrintWriter csvFile;
