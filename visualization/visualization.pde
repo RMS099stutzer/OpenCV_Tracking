@@ -2,14 +2,12 @@ import processing.net.*;
 import javax.swing.JOptionPane;
 import java.awt.Point;
 
-final int NUMBER = 24;
 int port = 10001;
 Server server;
 
 int baseTime = 0;
 int baseTime1 = 0;
 int baseTime2 = 0;
-int baseTime3 = 0;
 
 int MAX_LINES = 10000;
 int lineCount;
@@ -19,32 +17,20 @@ int receivedLines;
 float rotationX;
 float rotationZ;
 float prevRotationX, prevRotationZ;
-float cameraX, cameraY, cameraZ;
-float prevCameraX, prevCameraY, prevCameraZ;
+float cameraX, cameraY;
 float scaleFactor;
 PrintWriter csvFile;
 int outlierValue = 9999;
 int isFirstReceive = 0;
-int isFirstReceive1 = 0;
 int remainingSeconds = 2;
 int currentState = 0;
-int currentTime;
-int currentTime1;
-int currentTime2;
-int currentTime3;
+int elapsedTime;
+int loadingElapsedTime;
+int dotAnimationElapsedTime;
 int loadingInterval;
 String clientMessage;
 int repeatCount;
-float messageX;
-float messageY;
-float messageSpeedX;
-float messageSpeedY;
-int clickCountX;
-int clickCountY;
-float pullX;
-float pullY;
 int isDragging = 0;
-float strength;
 int loadingStatus;
 int loadingIncrement;
 int isFinishMessage;
@@ -54,7 +40,6 @@ float loadingDot1;
 float loadingDot2;
 int loadingDotState;
 int isFinished;
-int finalErrorMessage;
 
 void setup() {
     fullScreen(P3D);
@@ -76,10 +61,10 @@ void draw() {
     if (currentState == 3) {
         exit();
     } else if (currentState == 5) {
-        currentTime = millis() - baseTime;
+        elapsedTime = millis() - baseTime;
         displayEndScreen1();
         if (isFinishMessage == 1) {
-            if (currentTime >= 1000) {
+            if (elapsedTime >= 1000) {
                 baseTime = millis();
                 remainingSeconds--;
             }
@@ -117,7 +102,7 @@ void draw() {
             strokeWeight(10);
             line(start[k].x, start[k].y, start[k].z, end[k].x, end[k].y, end[k].z);
         }
-        currentTime = millis() - baseTime;
+        elapsedTime = millis() - baseTime;
         Client client = server.available();
         if (client == null) {
             return;
@@ -176,9 +161,7 @@ void mouseDragged() {
     }
     if (mouseButton == CENTER) {
         cameraX += pmouseY - mouseY;
-        prevCameraX = cameraX;
         cameraY += mouseX - pmouseX;
-        prevCameraY = cameraY;
     }
 }
 
@@ -192,38 +175,23 @@ void mouseWheel(MouseEvent e) {
     }
 }
 
-void mousePressed() {
-    pullX = mouseX;
-    pullY = mouseY;
-    clickCountX++;
-    clickCountY++;
-    isDragging = 1;
-}
-
-void mouseReleased() {
-    messageSpeedX = (pullX - mouseX) * 0.5;
-    messageSpeedY = (pullY - mouseY) * 0.5;
-    isDragging = 0;
-}
-
 void keyPressed() {
     if (key == ENTER) {
         currentState = 1;
     } else if (key == TAB) {
-        baseTime1 = millis();
-        baseTime2 = millis();
-        isFinished = 1;
-        currentState = 2;
+        if (currentState == 1) {
+            baseTime1 = millis();
+            baseTime2 = millis();
+            isFinished = 1;
+            currentState = 2;
+        }
     } else if (key == ESC) {
         currentState = 3;
-    } else {
-        currentState = 0;
     }
 }
 
 void initializeValues() {
     isFirstReceive = 0;
-    isFirstReceive1 = 0;
     lineCount = 0;
     receivedLines = 0;
     prevRotationX = PI / 6;
@@ -232,14 +200,7 @@ void initializeValues() {
     rotationZ = PI / 6;
     cameraX = 0;
     cameraY = 0;
-    cameraZ = 0;
     scaleFactor = 1.2;
-    messageSpeedX = 5;
-    messageSpeedY = 3;
-    messageX = 0;
-    messageY = 0;
-    clickCountX = 0;
-    clickCountY = 0;
     loadingInterval = 50;
     loadingStatus = 0;
     loadingIncrement = 4;
@@ -283,22 +244,9 @@ void displayStartScreen() {
     hint(ENABLE_DEPTH_TEST);
 }
 
-void displayEndScreen() {
-    camera(0, 10, 500, cameraX, cameraY, 0, 0, 0, -1);
-    background(255);
-    hint(DISABLE_DEPTH_TEST);
-    fill(0);
-    textSize(54);
-    text("終了まであと", 200, 220);
-    text(remainingSeconds, 380, 220);
-    text("秒", 430, 220);
-    textAlign(CENTER, CENTER);
-    hint(ENABLE_DEPTH_TEST);
-}
-
 void displayEndScreen1() {
-    currentTime1 = millis() - baseTime1;
-    currentTime2 = millis() - baseTime2;
+    loadingElapsedTime = millis() - baseTime1;
+    dotAnimationElapsedTime = millis() - baseTime2;
     camera(0, 10, 500, cameraX, cameraY, 0, 0, 0, -1);
     background(255);
     hint(DISABLE_DEPTH_TEST);
@@ -324,7 +272,7 @@ void displayEndScreen1() {
         fill(0, 0, 255);
         rect(100, 230, loadingProgress, 20);
     }
-    if (currentTime1 > loadingInterval) {
+    if (loadingElapsedTime > loadingInterval) {
         baseTime1 = millis();
         loadingProgress += loadingIncrement;
         loadingStatus = 1;
@@ -332,10 +280,10 @@ void displayEndScreen1() {
     fill(0);
     textSize(30);
     text("送信中", 220, 210);
-    text(".", 272, 212 + ( - 10 * abs(sin(loadingDot0 + PI))));
-    text(".", 292, 212 + ( - 10 * abs(sin(loadingDot1 + PI))));
-    text(".", 312, 212 + ( - 10 * abs(sin(loadingDot2 + PI))));
-    if (currentTime2 > 10) {
+    text(".", 272, 212 + ( -10 * abs(sin(loadingDot0 + PI))));
+    text(".", 292, 212 + ( -10 * abs(sin(loadingDot1 + PI))));
+    text(".", 312, 212 + ( -10 * abs(sin(loadingDot2 + PI))));
+    if (dotAnimationElapsedTime > 10) {
         if (loadingDotState == 0) {
             loadingDot0 += 0.1;
             baseTime2 = millis();
