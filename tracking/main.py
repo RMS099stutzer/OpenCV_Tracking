@@ -14,7 +14,6 @@ import numpy as np
 
 from config import CAMERA_NUM
 from config import TRACKING_THRESHOLDS
-
 from camera import find_available_cameras
 from camera import open_cameras
 from camera import release_cameras

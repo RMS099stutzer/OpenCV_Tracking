@@ -80,7 +80,6 @@ if __name__ == "__main__":
 
     # キー入力の監視
     keyboard.add_hotkey('s', start_monitoring)  # 's'キーで監視開始
-    keyboard.add_hotkey('u', stop_monitoring)   # 'u'キーで監視停止
 
     # メインスレッドは待機
     keyboard.wait('esc')  # 'esc'キーでプログラムを終了
