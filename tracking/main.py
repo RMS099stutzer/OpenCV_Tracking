@@ -37,6 +37,7 @@ xyz_coord_stablized = [None, None, None]
 
 exit_flag = threading.Event()
 
+
 def tracking_process(cameras_index=[2, 1]):
     global xyz_coord
     # Setting up cameras
@@ -108,8 +109,8 @@ def data_send_process():
             xyz_coord_stablized = [None, None, None]
         elif None not in xyz_coord_stablized and None not in xyz_coord:
             xyz_coord_stablized = xyz_coord * 0.1 + xyz_coord_stablized * 0.9
-        
-        print("[INFO] Sending data to the server")
+
+        # print("[INFO] Sending data to the server")
         try:
             print(xyz_coord_stablized)
             data_transfer_coord(xyz_coord)
@@ -117,9 +118,16 @@ def data_send_process():
             print("[ERROR] Could not send data to the server")
             exit_flag.set()
 
+
 if __name__ == "__main__":
     tracking_thread = threading.Thread(target=tracking_process)
-    data_send_thread = threading.Thread(target=data_send_process)
+    data_send_thread = threading.Thread(
+        target=data_send_process,
+        args=(
+            "127.0.0.1",
+            10001,
+        ),
+    )
 
     tracking_thread.start()
     data_send_thread.start()

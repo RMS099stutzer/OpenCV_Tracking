@@ -1,14 +1,11 @@
 import socket
 import time
 
-host = "10.101.224.180" #Processingで立ち上げたサーバのIPアドレス
-port = 10001       #Processingで設定したポート番号
-
 socket_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #オブジェクトの作成
 
-def socket_connect():
+def socket_connect(host, port):
     time.sleep(1)
-    global socket_client, host, port
+    global socket_client
     socket_client.connect((host, port))
 
 def data_transfer_coord(xyz_coord):
