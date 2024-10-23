@@ -129,7 +129,7 @@ void draw() {
             end[lineCount] = new PVector(int(messageParts[1]), int(messageParts[2]), int(messageParts[3]));
             lineCount++;
             receivedLines++;
-            csvFile = createWriter("csv/test_" + repeatCount + ".csv");
+            csvFile = createWriter("csv/" + year() + nf(month(), 2) + nf(day(), 2) + nf(hour(), 2) + nf(minute(), 2) + nf(second(), 2) + ".csv");
             createCSVFile();
             currentState = 5;
             repeatCount++;

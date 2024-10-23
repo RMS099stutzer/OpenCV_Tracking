@@ -2,6 +2,8 @@ import sys
 import os
 import threading
 import socket
+import time
+import subprocess
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "tracking"))
 
@@ -13,15 +15,13 @@ from socket_com.sender import monitor_folder
 
 ###################### 当日設定する必要があるもの【ここから】 ######################
 SERVER_HOST = "169.254.44.200"  # server側のIPアドレスに置き換える
+CAMERAS_INDEX = [2, 1]
 ###################### 当日設定する必要があるもの【ここまで】 ######################
 
-CAMERAS_INDEX = [2, 1]
 FOLDER_PATH = r"./visualization/csv"  # 監視するフォルダのパスを記入
 SERVER_PORT = 6000  # ポート番号
-
 MY_PORT = 10001
 
-import socket
 
 def clear_folder(folder_path):
     """指定されたフォルダ内のすべてのファイルを削除する"""
@@ -34,7 +34,8 @@ def clear_folder(folder_path):
                 elif os.path.isdir(file_path):
                     shutil.rmtree(file_path)
             except Exception as e:
-                print(f'Failed to delete {file_path}. Reason: {e}')
+                print(f"Failed to delete {file_path}. Reason: {e}")
+
 
 def get_ip_address():
     hostname = socket.gethostname()  # ホスト名を取得
@@ -43,10 +44,21 @@ def get_ip_address():
 
 
 if __name__ == "__main__":
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    sketch_dir = os.path.join(current_dir, "visualization")
+    output_dir = os.path.join(sketch_dir, "out")
+
+    command = f'processing-java --force --sketch={sketch_dir} --output={output_dir} --run --jvm-args="-Xmx4G"'
+    print(f"Executing: {command}")
+    subprocess.Popen(command, shell=True)
+    print("Processing sketch has started.")
+
     clear_folder(FOLDER_PATH)
 
     MY_IP = get_ip_address()
     print(f"Your IP Address: {MY_IP}")
+
+    time.sleep(8)
 
     tracking_thread = threading.Thread(target=tracking_process, args=(CAMERAS_INDEX,))
     send_to_processing_thread = threading.Thread(
