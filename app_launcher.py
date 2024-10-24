@@ -14,8 +14,8 @@ from tracking.main import tracking_process, data_send_process
 from socket_com.sender import monitor_folder
 
 ###################### 当日設定する必要があるもの【ここから】 ######################
-SERVER_HOST = "169.254.44.200"  # server側のIPアドレスに置き換える
-CAMERAS_INDEX = [2, 1]
+SERVER_HOST = "192.168.0.105"  # server側のIPアドレスに置き換える
+CAMERAS_INDEX = [1,2]
 ###################### 当日設定する必要があるもの【ここまで】 ######################
 
 FOLDER_PATH = r"./visualization/csv"  # 監視するフォルダのパスを記入

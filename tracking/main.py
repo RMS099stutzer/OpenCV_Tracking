@@ -110,7 +110,7 @@ def data_send_process(MY_IP, MY_PORT):
         elif None not in xyz_coord_stablized and None not in xyz_coord:
             xyz_coord_stablized = xyz_coord * 0.1 + xyz_coord_stablized * 0.9
 
-        print("[INFO] Sending data to the server")
+        # print("[INFO] Sending data to the server")
         try:
             print(xyz_coord_stablized)
             data_transfer_coord(xyz_coord)
