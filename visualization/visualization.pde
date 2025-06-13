@@ -1,5 +1,5 @@
 import processing.net.*;
-import javax.swing.JOptionPane;  //ブランチ練習
+import javax.swing.JOptionPane;
 import java.awt.Point;
 
 Server server;
