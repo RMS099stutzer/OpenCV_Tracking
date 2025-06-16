@@ -24,13 +24,13 @@ void handleClientMessage() {
         }
         baseTime = millis();
     }
-    if (currentState == 2) {
+    if (stateManager.state == 2) {
         end[lineCount] = new PVector(int(messageParts[1]), int(messageParts[2]), int(messageParts[3]));
         lineCount++;
         receivedLines++;
         csvFile = createWriter("csv/" + year() + nf(month(), 2) + nf(day(), 2) + nf(hour(), 2) + nf(minute(), 2) + nf(second(), 2) + ".csv");
         createCSVFile();
-        currentState = 5;
+        stateManager.state = 5;
     }
     remainingSeconds = 5;
 }

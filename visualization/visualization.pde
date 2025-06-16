@@ -2,6 +2,8 @@ import processing.net.*;
 import javax.swing.JOptionPane;
 import java.awt.Point;
 
+StateManager stateManager;
+EndScreenState endScreenState;
 Server server;
 String clientMessage;
 
@@ -17,14 +19,16 @@ PVector[] end = new PVector[MAX_LINES];
 int baseTime = 0;
 int elapsedTime;
 
-int currentState = 0;
+//int currentState = 0;
 
 void setup() {
     fullScreen(P3D);
     stroke(0);
     hint(ENABLE_DEPTH_SORT);
     lights();
-    
+    stateManager = new StateManager();
+    endScreenState = new EndScreenState();
+
     frameRate(60);
     
     server = new Server(this, PORT);
@@ -39,18 +43,18 @@ void setup() {
 void draw() {
     background(255);
     translate(width / 2, height / 2, 0);
-    
-    if (currentState == 0) {    // Start screen
-        displayStartScreen();
-    } else if (currentState == 1 || currentState == 2) { // Visualization screen
-        setCameraRotation();
-        renderLines();
-        handleClientMessage();
-    } else if (currentState == 3) { // Exit
-        exit();
-    } else if (currentState == 5) { // End screen
-        elapsedTime = millis() - baseTime;
-        displayEndScreen();
-        handleEndScreenState();
-    }
+    stateManager.current();
+//    if (currentState == 0) {    // Start screen
+//        displayStartScreen();
+//    } else if (currentState == 1 || currentState == 2) { // Visualization screen
+//        setCameraRotation();
+//        renderLines();
+//        handleClientMessage();
+//    } else if (currentState == 3) { // Exit
+//        exit();
+//    } else if (currentState == 5) { // End screen
+//        elapsedTime = millis() - baseTime;
+//        displayEndScreen();
+//        handleEndScreenState();
+//    }
 }

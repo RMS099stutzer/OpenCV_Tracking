@@ -5,7 +5,8 @@ void handleEndScreenState() {
             remainingSeconds--;
         }
         if (remainingSeconds == 0) {
-            currentState = 0;
+            stateManager.state = 0;
+            stateManager.straightMode = 0;
             for (int k = 0; k < lineCount; k++) {
                 start[k] = new PVector(0, 0, 0);
                 end[k] = new PVector(0, 0, 0);

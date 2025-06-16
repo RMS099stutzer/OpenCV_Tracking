@@ -96,3 +96,7 @@ void displayEndScreen() {
     textSize(54);
     hint(ENABLE_DEPTH_TEST);
 }
+
+class EndScreenState{
+
+}

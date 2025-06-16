@@ -36,15 +36,57 @@ void mouseWheel(MouseEvent e) {
 }
 
 void keyPressed() {
-    if (key == ENTER) {
-        currentState = 1;
-    } else if (key == TAB) {
-        if (currentState == 1) {
-            baseTime1 = millis();
-            baseTime2 = millis();
-            currentState = 2;
+//    if (key == ENTER) {
+//        stateManager.state = 1;
+//    } else if (key == TAB) {
+//        if (stateManager.state == 1) {
+//            baseTime1 = millis();
+//            baseTime2 = millis();
+//            stateManager.state = 2;
+//        }
+//    } else if (key == ESC) {
+//        stateManager.state = 3;
+//    }
+    stateManager.handleKey(key);
+}
+
+class StateManager{
+    int state = 0;
+    int straightMode = 0;
+
+    void current(){
+        switch (state) {
+            case 0:                     //Start screen
+                displayStartScreen();
+                break;
+            case 1:
+            case 2:                     //Visualization screen
+                setCameraRotation();
+                renderLines();
+                handleClientMessage();
+                break;
+            case 3:                     //Exit
+                exit();
+                break;
+            case 5:                     //End screen
+                elapsedTime = millis() - baseTime;
+                displayEndScreen();
+                handleEndScreenState();
+                break;
         }
-    } else if (key == ESC) {
-        currentState = 3;
+    }
+
+    void handleKey(char key){
+        if (key == ENTER) {
+            state = 1;
+        } else if (key == TAB) {
+            if (state == 1) {
+                baseTime1 = millis();
+                baseTime2 = millis();
+                state = 2;
+            }
+        } else if (key == ESC) {
+        state = 3;
+        }   
     }
 }
