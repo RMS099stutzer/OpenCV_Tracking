@@ -4,6 +4,8 @@ import java.awt.Point;
 
 StateManager stateManager;
 EndScreenState endScreenState;
+StraightLine straightLine;
+
 Server server;
 String clientMessage;
 
@@ -28,6 +30,7 @@ void setup() {
     lights();
     stateManager = new StateManager();
     endScreenState = new EndScreenState();
+    straightLine = new StraightLine();
 
     frameRate(60);
     
@@ -44,17 +47,4 @@ void draw() {
     background(255);
     translate(width / 2, height / 2, 0);
     stateManager.current();
-//    if (currentState == 0) {    // Start screen
-//        displayStartScreen();
-//    } else if (currentState == 1 || currentState == 2) { // Visualization screen
-//        setCameraRotation();
-//        renderLines();
-//        handleClientMessage();
-//    } else if (currentState == 3) { // Exit
-//        exit();
-//    } else if (currentState == 5) { // End screen
-//        elapsedTime = millis() - baseTime;
-//        displayEndScreen();
-//        handleEndScreenState();
-//    }
 }

@@ -18,7 +18,7 @@ void handleClientMessage() {
             isFirstReceive = 1;
         } else {
             end[lineCount] = new PVector(int(messageParts[1]), int(messageParts[2]), int(messageParts[3]));
-            start[lineCount + 1] = end[lineCount];
+            start[lineCount + 1] = end[lineCount].copy();
             lineCount++;
             receivedLines++;
         }
@@ -33,4 +33,23 @@ void handleClientMessage() {
         stateManager.state = 5;
     }
     remainingSeconds = 5;
+}
+
+class StraightLine{
+    int startSection;
+    int lineNumber;
+    PVector startPoint = new PVector(0, 0, 0);
+    PVector endPoint = new PVector(0, 0, 0);
+    PVector lineSection = new PVector(0, 0, 0);
+
+    void straightConversion(){
+        lineNumber = lineCount - 1 - startSection;
+        startPoint = start[startSection].copy();
+        endPoint = end[lineCount - 1].copy();
+        lineSection = (PVector.sub(endPoint, startPoint)).div(lineNumber);
+        for (int i = startSection; i < lineCount - 1; i++) {
+            end[startSection] = PVector.add(start[startSection], lineSection);
+            start[startSection + 1] = PVector.add(start[startSection], lineSection);
+        }
+    }
 }

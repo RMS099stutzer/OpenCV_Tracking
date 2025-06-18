@@ -36,23 +36,11 @@ void mouseWheel(MouseEvent e) {
 }
 
 void keyPressed() {
-//    if (key == ENTER) {
-//        stateManager.state = 1;
-//    } else if (key == TAB) {
-//        if (stateManager.state == 1) {
-//            baseTime1 = millis();
-//            baseTime2 = millis();
-//            stateManager.state = 2;
-//        }
-//    } else if (key == ESC) {
-//        stateManager.state = 3;
-//    }
     stateManager.handleKey(key);
 }
 
 class StateManager{
     int state = 0;
-    int straightMode = 0;
 
     void current(){
         switch (state) {
@@ -86,7 +74,10 @@ class StateManager{
                 state = 2;
             }
         } else if (key == ESC) {
-        state = 3;
-        }   
+            state = 3;
+        } else if (key == 's' || key == 'S') {
+            straightLine.straightConversion();
+        } else if (key == 'n' || key == 'N') {
+            straightLine.startSection = lineCount;
     }
 }
