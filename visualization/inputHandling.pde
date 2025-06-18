@@ -79,5 +79,7 @@ class StateManager{
             straightLine.straightConversion();
         } else if (key == 'n' || key == 'N') {
             straightLine.startSection = lineCount;
+            println(lineCount);
+        }
     }
 }

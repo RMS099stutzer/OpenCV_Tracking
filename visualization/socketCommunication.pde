@@ -47,9 +47,16 @@ class StraightLine{
         startPoint = start[startSection].copy();
         endPoint = end[lineCount - 1].copy();
         lineSection = (PVector.sub(endPoint, startPoint)).div(lineNumber);
+        println(lineNumber);
+        println(lineCount - 1);
+        println(startPoint);
+        println(endPoint);
+        println(lineSection);
         for (int i = startSection; i < lineCount - 1; i++) {
-            end[startSection] = PVector.add(start[startSection], lineSection);
-            start[startSection + 1] = PVector.add(start[startSection], lineSection);
+            end[i] = PVector.add(start[i], lineSection);
+            start[i + 1] = PVector.add(start[i], lineSection);
+            println(lineSection);
+            //end[startSection] = endPoint;
         }
     }
 }
