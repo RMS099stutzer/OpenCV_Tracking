@@ -8,14 +8,18 @@ void handleClientMessage() {
     }
     clientMessage = client.readString();
     String[] messageParts = split(clientMessage, ',');
-    if (unhex(messageParts[0]) == 43690) {
+    if (unhex(messageParts[0]) == 43690) {          //AAAA
         start[lineCount] = new PVector(0, 0, 0);
         isFirstReceive = 0;
+        if (lineCount != 0 && stateManager.straightMode == 1) {
+            straightLine.straightConversion();
+        }
     }
-    if (unhex(messageParts[0]) == 65535) {
+    if (unhex(messageParts[0]) == 65535) {          //FFFF
         if (isFirstReceive == 0) {
             start[lineCount] = new PVector(int(messageParts[1]), int(messageParts[2]), int(messageParts[3]));
             isFirstReceive = 1;
+            straightLine.startSection = lineCount;
         } else {
             end[lineCount] = new PVector(int(messageParts[1]), int(messageParts[2]), int(messageParts[3]));
             start[lineCount + 1] = end[lineCount].copy();
@@ -47,16 +51,17 @@ class StraightLine{
         startPoint = start[startSection].copy();
         endPoint = end[lineCount - 1].copy();
         lineSection = (PVector.sub(endPoint, startPoint)).div(lineNumber);
-        println(lineNumber);
-        println(lineCount - 1);
-        println(startPoint);
-        println(endPoint);
-        println(lineSection);
         for (int i = startSection; i < lineCount - 1; i++) {
             end[i] = PVector.add(start[i], lineSection);
             start[i + 1] = PVector.add(start[i], lineSection);
-            println(lineSection);
-            //end[startSection] = endPoint;
         }
+    }
+
+    void lineDelete(){
+        for (int i = startSection; i < lineCount - 1; i++) {
+            start[i] = new PVector(0, 0, 0);
+            end[i] = new PVector(0, 0, 0);
+        }
+        lineCount = startSection;
     }
 }

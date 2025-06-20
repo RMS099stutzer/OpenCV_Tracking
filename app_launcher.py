@@ -15,7 +15,7 @@ from socket_com.sender import monitor_folder
 
 ###################### 当日設定する必要があるもの【ここから】 ######################
 SERVER_HOST = "10.101.99.136"  # server側のIPアドレスに置き換える
-CAMERAS_INDEX = [1,2]
+CAMERAS_INDEX = [2,1]
 ###################### 当日設定する必要があるもの【ここまで】 ######################
 
 FOLDER_PATH = r"./visualization/csv"  # 監視するフォルダのパスを記入

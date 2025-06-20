@@ -28,6 +28,15 @@ void renderLines() {
     line(0, 0, 0, 0, 0, 160);
     strokeCap(ROUND);
     strokeWeight(10);
+    hint(DISABLE_DEPTH_TEST);
+    camera();
+    textAlign(RIGHT, TOP);
+    if (stateManager.straightMode == 1) {
+        text("直線", width - 10, 10);
+    } else if (stateManager.straightMode == 0) {
+        text("手書き", width - 10, 10);
+    }
+    hint(ENABLE_DEPTH_TEST);
     for (int k = 0; k < lineCount; k++) {
         stroke(0);
         strokeWeight(10);
