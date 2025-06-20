@@ -41,7 +41,8 @@ void keyPressed() {
 
 class StateManager{
     int state = 0;
-    int straightMode = 0; 
+    int straightMode = 0;
+    int pushCount = 0;
 
     void current(){
         switch (state) {
@@ -78,8 +79,10 @@ class StateManager{
             state = 3;
         } else if (key == 's' || key == 'S') {
             straightMode = 1;
+            pushCount = lineCount;
         } else if (key == 'n' || key == 'N') {
             straightMode = 0;
+            pushCount = 0;
         } else if (key == DELETE) {
             straightLine.lineDelete();
         }

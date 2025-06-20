@@ -11,7 +11,7 @@ void handleClientMessage() {
     if (unhex(messageParts[0]) == 43690) {          //AAAA
         start[lineCount] = new PVector(0, 0, 0);
         isFirstReceive = 0;
-        if (lineCount != 0 && stateManager.straightMode == 1) {
+        if (lineCount != 0 && stateManager.straightMode == 1 && stateManager.pushCount != lineCount) {
             straightLine.straightConversion();
         }
     }

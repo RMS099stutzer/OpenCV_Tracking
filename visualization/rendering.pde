@@ -28,6 +28,11 @@ void renderLines() {
     line(0, 0, 0, 0, 0, 160);
     strokeCap(ROUND);
     strokeWeight(10);
+    for (int k = 0; k < lineCount; k++) {
+        stroke(0);
+        strokeWeight(10);
+        line(start[k].x, start[k].y, start[k].z, end[k].x, end[k].y, end[k].z);
+    }
     hint(DISABLE_DEPTH_TEST);
     camera();
     textAlign(RIGHT, TOP);
@@ -37,11 +42,6 @@ void renderLines() {
         text("手書き", width - 10, 10);
     }
     hint(ENABLE_DEPTH_TEST);
-    for (int k = 0; k < lineCount; k++) {
-        stroke(0);
-        strokeWeight(10);
-        line(start[k].x, start[k].y, start[k].z, end[k].x, end[k].y, end[k].z);
-    }
 }
 
 
